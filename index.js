@@ -1,12 +1,15 @@
 require("dotenv").config()
 const express = require("express")
 const {initDb} = require('./src/db/sequelize');
+let morgan
+if (process.env.DEV) morgan = require("morgan")
 const userRoutes = require("./src/routes/user.routes")
 const postRoutes = require("./src/routes/post.routes")
 const commentRoutes = require("./src/routes/comment.routes")
 
 const app = express()
 app.use(express.json())
+if (process.env.DEV) app.use(morgan("dev"))
 
 initDb().then(() => console.log("Base de donnée initialisée"));
 
