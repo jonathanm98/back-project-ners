@@ -4,8 +4,8 @@
   "description": "Projet de réseau social simple. Partie back-end qui utilisera NodeJS, Express, Sequelize(MariaDB)",
   "main": "index.js",
   "scripts": {
-    "dev": "set NODE_VERSION=development && nodemon index.js",
-    "start": "set NODE_VERSION=production && node index.js"
+    "dev": "set NODE_ENVIRONEMENT=development && nodemon index.js",
+    "start": "set NODE_ENVIRONEMENT=production && node index.js"
   },
   "repository": {
     "type": "git",
