@@ -27,16 +27,17 @@ const register = (req, res) => {
 }
 
 const login = (req, res) => {
-    if (!req.body.email ||!req.body.password) return res.status(401).json("Vous devez renseigner les champ 'email' et 'mot de passe'")
+    const {email, password} = req.body
+    if (!email ||!password) return res.status(401).json("Vous devez renseigner les champ 'email' et 'mot de passe'")
 
-    User.findOne({where: {email: req.body.email}}).then((user) => {
+    User.findOne({where: {email}}).then((user) => {
         if (!user) {
             const message = `Utilisateur ou mot de passe incorrect.`;
             return res.status(404).json({message})
         }
-        bcrypt.compare(req.body.password, user.password).then((isPasswordValid) => {
+        bcrypt.compare(password, user.password).then((isPasswordValid) => {
             if (!isPasswordValid) return res.status(400).json("Utilisateur ou mot de passe incorrect.")
-            const token = jwt.sign({userId: user.id}, process.env.JWT_TOKEN, {expiresIn: "24h"})
+            const token = jwt.sign({userId: user.userId}, process.env.JWT_TOKEN, {expiresIn: "24h"})
             const message = "Vous avez été connecté avec succès !"
             res.json({message, data: {token}})
         })

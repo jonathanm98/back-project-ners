@@ -6,6 +6,8 @@ const CommentModel = require("../models/comment.model")
 const sequelize = new Sequelize('ners', 'john', process.env.DB_PASSWORD, {
     host: 'localhost',
     dialect: 'mariadb',
+    charset: 'utf8mb4',
+    collate: 'utf8mb4_unicode_ci',
     dialectOptions: {
         timezone: 'Etc/GMT-2',
     },

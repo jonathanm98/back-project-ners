@@ -19,7 +19,7 @@ const createPost = (req, res) => {
 };
 
 const updatePost = async (req, res) => {
-    const {postId, content, userId} = req.body
+    const {postId, content} = req.body
 
     if (!content || !postId) {
         return res.status(400).json("Vous ne pouvez pas envoyer un post vide")
@@ -36,7 +36,22 @@ const updatePost = async (req, res) => {
     }
 }
 
+const deletePost = (req, res) => {
+    const {postId} = req.body
+    if (!postId) {
+        return res.status(400).json("Vous devez spécifier un post à supprimer")
+    }
+
+    Post.destroy({where: {postId}})
+        .then(() => res.status(200).json("Post supprimé avec succès"))
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json("Une erreur s'est produite lors de la supression du post");
+        });
+}
+
 module.exports = {
     createPost,
-    updatePost
+    updatePost,
+    deletePost,
 }
