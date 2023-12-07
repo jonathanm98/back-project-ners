@@ -13,6 +13,20 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        picture: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        sexe: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [['male', 'female']],
+                    msg: "Le champ sexe doit être 'Homme' ou 'Femme'"
+                }
+            }
+        },
         email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -33,5 +47,8 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: "cascade"
         })
     }
+    User.addHook("beforeValidate", (user, options) => {
+        if (!user.picture) user.picture = `${process.env.API_URL}/api/image/default/${user.sexe}.png`
+    })
     return User
 }
