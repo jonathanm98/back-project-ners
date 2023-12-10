@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         likes: {
             type: DataTypes.STRING,
+            defaultValue: "[]"
         }
     });
 
