@@ -1,4 +1,5 @@
 const {Post, Comment, User} = require("../db/sequelize")
+const {logger} = require("sequelize/lib/utils/logger");
 
 const createPost = (req, res) => {
     const {content, userId} = req.body
@@ -72,6 +73,13 @@ const getPosts = async (req, res) => {
                     ]
                 }
             ],
+        });
+
+        posts.forEach(post => {
+            post.likes = JSON.parse(post.likes);
+            post.Comments.forEach(comment => {
+                comment.likes = JSON.parse(comment.likes);
+            });
         });
 
         res.json({
