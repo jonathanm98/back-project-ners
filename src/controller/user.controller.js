@@ -39,7 +39,8 @@ const login = (req, res) => {
             if (!isPasswordValid) return res.status(400).json("Utilisateur ou mot de passe incorrect.")
             const token = jwt.sign({id: user.id}, process.env.JWT_TOKEN, {expiresIn: "24h"})
             const message = "Vous avez été connecté avec succès !"
-            res.json({message, data: {token}})
+            res.cookie('jwt', token, { secure: true, httpOnly: true });
+            res.json({message})
         })
     })
         .catch(err => {
