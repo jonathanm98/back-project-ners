@@ -40,13 +40,16 @@ const updatePost = async (req, res) => {
 }
 
 const deletePost = (req, res) => {
-    const {postId} = req.body
+    const {postId, userId} = req.body
     if (!postId) {
         return res.status(400).json({message: "Vous devez spécifier un post à supprimer"})
     }
 
-    Post.destroy({where: {postId}})
-        .then(() => res.status(200).json({message: "Post supprimé avec succès"}))
+    Post.destroy({where: {UderId: userId, id: postId}})
+        .then((post) => {
+            if (post === 0) throw new Error()
+            res.status(200).json({message: "Post supprimé avec succès"})
+        })
         .catch((err) => {
             console.log(err);
             res.status(500).json({message: "Une erreur s'est produite lors de la supression du post"});
@@ -70,7 +73,7 @@ const likePost = async (req, res) => {
         res.status(201).json({message, data: {...post.dataValues, likes: JSON.parse(post.likes)}})
     } catch(err) {
         console.log(err)
-        res.status(500).json({message: "Une erreur s'est produite lors de l'ajout du like"});
+        res.status(500).json({message: "Une erreur s'est produite lors de l'ajout/suppression du like"});
     }
 }
 
@@ -97,14 +100,12 @@ const getPosts = async (req, res) => {
                 }
             ],
         });
-
         posts.forEach(post => {
             post.likes = JSON.parse(post.likes);
             post.Comments.forEach(comment => {
                 comment.likes = JSON.parse(comment.likes);
             });
         });
-
         res.json({
             posts,
             currentPage: page,
