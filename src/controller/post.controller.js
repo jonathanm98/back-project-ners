@@ -50,6 +50,27 @@ const deletePost = (req, res) => {
             res.status(500).json("Une erreur s'est produite lors de la supression du post");
         });
 }
+const likePost = async (req, res) => {
+    const {userId, postId} = req.body
+    let message = ""
+    try {
+        const post = await Post.findByPk(postId)
+        let likes = JSON.parse(post.likes)
+        if (!likes.includes(userId)) {
+            likes.push(userId)
+            message = "Le like a bien été ajouté"
+        } else {
+            likes = likes.filter(id => id !== userId);
+            message = "Le like a bien été supprimé"
+        }
+        post.likes = JSON.stringify(likes)
+        await post.save()
+        res.status(201).json({message, data: {...post.dataValues, likes: JSON.parse(post.likes)}})
+    } catch(err) {
+        console.log(err)
+        res.status(500).json("Une erreur s'est produite lors de l'ajout du like");
+    }
+}
 
 const getPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -98,5 +119,6 @@ module.exports = {
     createPost,
     updatePost,
     deletePost,
+    likePost,
     getPosts,
 }
