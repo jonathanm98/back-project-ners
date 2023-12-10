@@ -37,7 +37,7 @@ const login = (req, res) => {
         }
         bcrypt.compare(password, user.password).then((isPasswordValid) => {
             if (!isPasswordValid) return res.status(400).json("Utilisateur ou mot de passe incorrect.")
-            const token = jwt.sign({userId: user.userId}, process.env.JWT_TOKEN, {expiresIn: "24h"})
+            const token = jwt.sign({id: user.id}, process.env.JWT_TOKEN, {expiresIn: "24h"})
             const message = "Vous avez été connecté avec succès !"
             res.json({message, data: {token}})
         })

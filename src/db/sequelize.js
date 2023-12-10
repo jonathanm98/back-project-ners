@@ -24,6 +24,6 @@ Object.keys(models).forEach((modelName) => {
     }
 });
 const initDb = () => {
-    return sequelize.sync({force: true})
+    return sequelize.sync({force: false})
 }
 module.exports = {initDb, User, Post, Comment}

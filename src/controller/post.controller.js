@@ -1,4 +1,4 @@
-const {Post} = require("../db/sequelize")
+const {Post, Comment, User} = require("../db/sequelize")
 
 const createPost = (req, res) => {
     const {content, userId} = req.body
@@ -50,8 +50,45 @@ const deletePost = (req, res) => {
         });
 }
 
+const getPosts = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    try {
+        const offset = (page - 1) * limit;
+        const posts = await Post.findAll({
+            offset,
+            limit,
+            include: [
+                {
+                    model: Comment,
+                    required: false,
+                    attributes: ['id', 'content', 'likes', 'createdAt'],
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['firstName', 'lastName', 'picture']
+                        }
+                    ]
+                }
+            ],
+        });
+
+        res.json({
+            posts,
+            currentPage: page,
+            postsPerPage: limit,
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des posts.' });
+    }
+}
+
+
 module.exports = {
     createPost,
     updatePost,
     deletePost,
+    getPosts,
 }
