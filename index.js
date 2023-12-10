@@ -23,8 +23,8 @@ app.use("/api/image/user", express.static("./src/img/user/"))
 
 app.use("*", (req, res) => res.status(404).json({message:"La page demandée n'existe pas"}))
 
-app.use(function (err, req, res, next) {
-    res.status(400).json({ message: "Erreur lors du téléchargement du fichier", error: err.message })
+app.use(function (err, res, next) {
+    res.status(400).json({ message: "Erreur lors du téléchargement du fichier", data: err })
 })
 
 app.listen(process.env.PORT, () => console.log("Serveur démarré sur le port " + process.env.PORT))

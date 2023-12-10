@@ -5,7 +5,7 @@ const createPost = (req, res) => {
     const {content, userId} = req.body
 
     if (!content || !userId) {
-        return res.status(400).json("Le contenu du post et l'identifiant de l'utilisateur sont requis");
+        return res.status(400).json({message: "Le contenu du post et l'identifiant de l'utilisateur sont requis"});
     }
 
     Post.create({
@@ -15,39 +15,41 @@ const createPost = (req, res) => {
         res.status(201).json(post);
     }).catch((err) => {
         console.log(err);
-        res.status(500).json("Une erreur s'est produite lors de la création du post");
+        res.status(500).json({message: "Une erreur s'est produite lors de la création du post"});
     });
 };
 
 const updatePost = async (req, res) => {
-    const {postId, content} = req.body
+    const {postId, content, userId} = req.body
 
     if (!content || !postId) {
-        return res.status(400).json("Vous ne pouvez pas envoyer un post vide")
+        return res.status(400).json({message: "Vous ne pouvez pas envoyer un post vide"})
     }
 
     try {
-        const post = await Post.findOne({where: {postId}})
-        if (!post) return res.status(401).json("Vous devez être authentifié pour effectuer ceci")
+        const post = await Post.findByPk(postId)
+        if (post.UserId !== userId) res.status(401).json({message: "Vous n'êtes pas autorisé à faire ça !"});
         post.content = content
-        res.status(201).json(post)
+        await post.save()
+        const message = "Le post a été modifé avec succès"
+        res.status(201).json({message, data: {...post.dataValues, likes: JSON.parse(post.likes)}})
     } catch (err) {
         console.log(err)
-        res.status(500).json("Une erreur s'est produite lors de la mise à jour du post")
+        res.status(500).json({message: "Une erreur s'est produite lors de la mise à jour du post"})
     }
 }
 
 const deletePost = (req, res) => {
     const {postId} = req.body
     if (!postId) {
-        return res.status(400).json("Vous devez spécifier un post à supprimer")
+        return res.status(400).json({message: "Vous devez spécifier un post à supprimer"})
     }
 
     Post.destroy({where: {postId}})
-        .then(() => res.status(200).json("Post supprimé avec succès"))
+        .then(() => res.status(200).json({message: "Post supprimé avec succès"}))
         .catch((err) => {
             console.log(err);
-            res.status(500).json("Une erreur s'est produite lors de la supression du post");
+            res.status(500).json({message: "Une erreur s'est produite lors de la supression du post"});
         });
 }
 const likePost = async (req, res) => {
@@ -68,7 +70,7 @@ const likePost = async (req, res) => {
         res.status(201).json({message, data: {...post.dataValues, likes: JSON.parse(post.likes)}})
     } catch(err) {
         console.log(err)
-        res.status(500).json("Une erreur s'est produite lors de l'ajout du like");
+        res.status(500).json({message: "Une erreur s'est produite lors de l'ajout du like"});
     }
 }
 
@@ -110,7 +112,7 @@ const getPosts = async (req, res) => {
         });
     } catch (error) {
         console.log(error)
-        res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des posts.' });
+        res.status(500).json({ message: 'Une erreur est survenue lors de la récupération des posts.' });
     }
 }
 
